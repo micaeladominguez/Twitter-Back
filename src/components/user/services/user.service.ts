@@ -5,8 +5,6 @@ import {
   UpdateUserInput,
 } from "@/components/user/validator/types";
 import argon2 from "argon2";
-import Prisma from "@/prisma";
-import { UserResponse } from "@/components/user/models/utils/user.entity.response";
 
 export class UserService {
   private static prisma: PrismaClient = new PrismaClient();

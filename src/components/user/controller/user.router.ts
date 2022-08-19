@@ -1,8 +1,6 @@
-import express, {response} from "express";
+import express from "express";
 import { UserService } from "@/components/user/services/user.service";
 import { UserValidator } from "@/components/user/validator/user.validator";
-import { UpdateUserInput } from "@/components/user/validator/types";
-import { User } from "@/components/user/models";
 const router = express.Router();
 router.put("/", async (req, res) => {
   try {
@@ -58,10 +56,17 @@ router.get("/", async (req, res) => {
 router.put("/block", async (req, res) => {
   try {
     const id = req.query.id;
+    let user;
     if (id) {
-      const user = UserService.blockUser({ id: String(id) });
+      user = UserService.blockUser({ id: String(id) });
     }
-    res.status(200).json({response:{message: "User is correctly blocked"}});
+    if (user) {
+      res
+        .status(200)
+        .json({ response: { message: "User is correctly blocked" } });
+    } else {
+      res.status(404).json({ message: "User couldn't be blocked" }).send();
+    }
   } catch ({ message }) {
     res.status(404).json({ error: message }).send();
   }

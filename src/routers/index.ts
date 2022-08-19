@@ -5,6 +5,7 @@ import { signUpRouter } from "@/components/register/signup.router";
 import { authRouter } from "@/components/auth/controller/auth.router";
 import { logger } from "@/logger";
 import { AuthService } from "@/components/auth/service/auth.service";
+import { tweetRouter } from "@/components/tweet/controller/tweet.router";
 
 const router = express.Router();
 
@@ -33,5 +34,6 @@ router.use(async (req, res, next) => {
 });
 
 router.use("/users", userRouter);
+router.use("/tweet", tweetRouter);
 
 export { router };
