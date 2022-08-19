@@ -1,27 +1,20 @@
 import { PrismaClient } from "@prisma/client";
 import { User } from "@/components/user/models";
-import { UpdateUserInput } from "@/components/user/validator/types";
+import {
+  CreateUserInput,
+  UpdateUserInput,
+} from "@/components/user/validator/types";
 
 export class UserService {
   private static prisma: PrismaClient = new PrismaClient();
+
   public static async createUser({
-    name,
-    email,
-    password,
-    phone,
+    createUserInput,
   }: {
-    name: string;
-    email: string;
-    password: string;
-    phone: string;
+    createUserInput: CreateUserInput;
   }): Promise<User> {
     const user: User = await this.prisma.user.create({
-      data: {
-        name: name,
-        email: email,
-        password: password,
-        phone: phone,
-      },
+      data: createUserInput,
     });
     return user;
   }

@@ -11,7 +11,7 @@
     "start:dev": "ts-node-dev -r ./scripts/bootstrap.js --rs src/server",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "db:generate": "prisma generate && npm run format",
-    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:dev": "prisma migrate dev --name init",
     "db:migrate:deploy": "prisma migrate deploy",
     "test": "jest  --config ./test/jest.json",
     "test:watch": "jest --watch",
