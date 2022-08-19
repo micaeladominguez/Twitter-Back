@@ -5,4 +5,5 @@ export class User {
   password!: string;
   phone?: string | null;
   isActive!: boolean;
+  createdAt!: Date;
 }
