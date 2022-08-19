@@ -2,25 +2,23 @@ import * as z from "zod";
 
 export const createUserInputSchema = z.object({
   name: z.string(),
-  password: z.string(),
-  phone: z.string(),
+  password: z.string().min(8, "Please enter a valid password"),
+  phone: z.string().optional(),
   email: z.string().email("Invalid mail format"),
 });
 export type CreateUserInput = {
   name: string;
   password: string;
-  phone: string;
+  phone?: string;
   email: string;
 };
 export const updateUserInputSchema = z.object({
-  id: z.string(),
   name: z.string().optional(),
   password: z.string().optional(),
   phone: z.string().optional(),
   isActive: z.boolean().optional(),
 });
 export type UpdateUserInput = {
-  id: string;
   name?: string;
   password?: string;
   phone?: string;

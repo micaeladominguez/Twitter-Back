@@ -2,24 +2,13 @@ import express from "express";
 import { UserService } from "@/components/user/services/user.service";
 import { UserValidator } from "@/components/user/validator/user.validator";
 const router = express.Router();
-router.post("/", async (req, res) => {
-  try {
-    const validateBody = UserValidator.validateCreateUserBody(req.body);
-    const user = await UserService.createUser({
-      createUserInput: validateBody,
-    });
-    res.status(200).json({ response: user }).send();
-  } catch ({ message }) {
-    res.status(404).json({ error: message }).send();
-  }
-});
 router.put("/", async (req, res) => {
   try {
-    const { id } = req.body;
+    const { id } = res.locals.user;
     const validateBody = UserValidator.validateUpdateUserBody(req.body);
     const user = await UserService.updateUser({
-      updateUserInput: validateBody,
       id: id,
+      updateUserInput: validateBody,
     });
     res.status(200).json({ response: user }).send();
   } catch ({ message }) {
