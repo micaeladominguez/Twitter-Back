@@ -11,7 +11,7 @@ router.post("/", async (req, res) => {
     const user = await UserService.createUser({
       createUserInput: validatedBody,
     });
-    res.status(201).json({ response: {user: {id:user.id, name: user.name, email: user.email, phone: user.phone}} }).send();
+    res.status(201).json({ response: user }).send();
   } catch ({ message }) {
     res.status(400).json({ error: message }).send();
   }

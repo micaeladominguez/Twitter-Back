@@ -6,6 +6,7 @@ import {
 } from "@/components/user/validator/types";
 import argon2 from "argon2";
 import Prisma from "@/prisma";
+import { UserResponse } from "@/components/user/models/utils/user.entity.response";
 
 export class UserService {
   private static prisma: PrismaClient = new PrismaClient();
@@ -14,10 +15,10 @@ export class UserService {
     createUserInput,
   }: {
     createUserInput: CreateUserInput;
-  }): Promise<User> {
+  }) {
     const hashedPassword = await argon2.hash(createUserInput.password);
     try {
-      const user: User = await this.prisma.user.create({
+      const user = await this.prisma.user.create({
         data: {
           name: createUserInput.name,
           password: hashedPassword,
@@ -25,7 +26,8 @@ export class UserService {
           phone: createUserInput.phone,
         },
       });
-      return user;
+      const userWithoutPassword = this.exclude(user, "password");
+      return userWithoutPassword;
     } catch (e) {
       throw Error("The email is already taken");
     }
@@ -36,7 +38,7 @@ export class UserService {
   }: {
     id: string;
     updateUserInput: UpdateUserInput;
-  }): Promise<User> {
+  }) {
     const findUser = await this.findUserById({ id: id });
     if (!findUser) throw new Error("user not found");
     const user: User = await this.prisma.user.update({
@@ -45,10 +47,19 @@ export class UserService {
       },
       data: updateUserInput,
     });
-    return user;
+    const userWithoutPassword = this.exclude(findUser, "password");
+    return userWithoutPassword;
   }
 
-  static async findUserByEmail({ email }: { email: string }): Promise<User> {
+  static async allUsers() {
+    const users: User[] = await this.prisma.user.findMany();
+    const usersWithoutPassword: User[] = [];
+    users.forEach((user) => {
+      usersWithoutPassword.push(this.exclude(user, "password"));
+    });
+    return usersWithoutPassword;
+  }
+  static async findUserByEmail({ email }: { email: string }) {
     const findUser = await this.prisma.user.findUnique({
       where: {
         email: email,
@@ -65,5 +76,26 @@ export class UserService {
     });
     if (!findUser) throw new Error("user not found");
     return findUser;
+  }
+
+  static async allUsersLike({ email }: { email: string }) {
+    const findUsers = await this.prisma.user.findMany({
+      where: {
+        email: {
+          contains: email,
+        },
+      },
+    });
+    return findUsers;
+  }
+
+  static exclude<User, Key extends keyof User>(
+    user: User,
+    ...keys: Key[]
+  ): Omit<User, Key> {
+    for (const key of keys) {
+      delete user[key];
+    }
+    return user;
   }
 }
