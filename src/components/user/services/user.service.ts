@@ -47,7 +47,7 @@ export class UserService {
       },
       data: updateUserInput,
     });
-    const userWithoutPassword = this.exclude(findUser, "password");
+    const userWithoutPassword = this.exclude(user, "password");
     return userWithoutPassword;
   }
 
@@ -75,7 +75,8 @@ export class UserService {
       },
     });
     if (!findUser) throw new Error("user not found");
-    return findUser;
+    const userWithoutPassword = this.exclude(findUser, "password");
+    return userWithoutPassword;
   }
 
   static async allUsersLike({ email }: { email: string }) {
@@ -97,5 +98,16 @@ export class UserService {
       delete user[key];
     }
     return user;
+  }
+
+  static async blockUser({ id }: { id: string }) {
+    const user: User = await this.prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        isActive: false,
+      },
+    });
   }
 }

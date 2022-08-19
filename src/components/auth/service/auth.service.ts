@@ -24,15 +24,19 @@ export class AuthService {
     const match = await argon2.verify(user.password, password);
     if (match) {
       const jwt = this.encodeUserSessionAccess(user.id);
-      return {
-        jwt,
-        user: {
-          id: user.id,
-          email: user.email,
-          phone: user.phone,
-          name: user.name,
-        },
-      };
+      if (user.isActive) {
+        return {
+          jwt,
+          user: {
+            id: user.id,
+            email: user.email,
+            phone: user.phone,
+            name: user.name,
+          },
+        };
+      } else {
+        throw new Error("Invalid login");
+      }
     }
     throw new Error("Invalid login");
   }

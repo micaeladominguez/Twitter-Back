@@ -1,6 +1,8 @@
-import express from "express";
+import express, {response} from "express";
 import { UserService } from "@/components/user/services/user.service";
 import { UserValidator } from "@/components/user/validator/user.validator";
+import { UpdateUserInput } from "@/components/user/validator/types";
+import { User } from "@/components/user/models";
 const router = express.Router();
 router.put("/", async (req, res) => {
   try {
@@ -25,12 +27,7 @@ router.get("/me", async (_, res) => {
       .status(200)
       .json({
         response: {
-          user: {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            phone: user.phone,
-          },
+          user,
         },
       })
       .send();
@@ -38,7 +35,6 @@ router.get("/me", async (_, res) => {
     res.status(404).json({ error: message }).send();
   }
 });
-
 
 router.get("/", async (req, res) => {
   try {
@@ -55,6 +51,17 @@ router.get("/", async (req, res) => {
         response: { users },
       })
       .send();
+  } catch ({ message }) {
+    res.status(404).json({ error: message }).send();
+  }
+});
+router.put("/block", async (req, res) => {
+  try {
+    const id = req.query.id;
+    if (id) {
+      const user = UserService.blockUser({ id: String(id) });
+    }
+    res.status(200).json({response:{message: "User is correctly blocked"}});
   } catch ({ message }) {
     res.status(404).json({ error: message }).send();
   }
