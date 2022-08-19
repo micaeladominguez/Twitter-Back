@@ -23,7 +23,7 @@ export class UserService {
     id,
   }: {
     updateUserInput: UpdateUserInput;
-    id: number;
+    id: string;
   }): Promise<User> {
     const findUser = await this.prisma.user.findUnique({
       where: {

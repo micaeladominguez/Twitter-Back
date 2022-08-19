@@ -13,15 +13,16 @@ export type CreateUserInput = {
   email: string;
 };
 export const updateUserInputSchema = z.object({
+  id: z.string(),
   name: z.string().optional(),
   password: z.string().optional(),
   phone: z.string().optional(),
   isActive: z.boolean().optional(),
 });
 export type UpdateUserInput = {
+  id: string;
   name?: string;
   password?: string;
   phone?: string;
-  email?: string;
   isActive?: boolean;
 };
