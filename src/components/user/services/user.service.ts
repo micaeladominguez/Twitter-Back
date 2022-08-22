@@ -5,6 +5,7 @@ import {
   UpdateUserInput,
 } from "@/components/user/validator/types";
 import argon2 from "argon2";
+import {exclude} from "@/components/utils/methods";
 
 export class UserService {
   constructor(private readonly prisma: PrismaClient) {}
@@ -19,7 +20,7 @@ export class UserService {
           phone: createUserInput.phone,
         },
       });
-      const userWithoutPassword = this.exclude(user, "password");
+      const userWithoutPassword = exclude(user, "password");
       return userWithoutPassword;
     } catch (e) {
       throw Error("The email is already taken");
@@ -40,7 +41,7 @@ export class UserService {
       },
       data: updateUserInput,
     });
-    const userWithoutPassword = this.exclude(user, "password");
+    const userWithoutPassword = exclude(user, "password");
     return userWithoutPassword;
   }
 
@@ -48,7 +49,7 @@ export class UserService {
     const users: User[] = await this.prisma.user.findMany();
     const usersWithoutPassword: User[] = [];
     users.forEach((user) => {
-      usersWithoutPassword.push(this.exclude(user, "password"));
+      usersWithoutPassword.push(exclude(user, "password"));
     });
     return usersWithoutPassword;
   }
@@ -70,7 +71,7 @@ export class UserService {
       },
     });
     if (!findUser) throw new Error("user not found");
-    const userWithoutPassword = this.exclude(findUser, "password");
+    const userWithoutPassword = exclude(findUser, "password");
     return userWithoutPassword;
   }
 
@@ -83,16 +84,6 @@ export class UserService {
       },
     });
     return findUsers;
-  }
-
-  private exclude<User, Key extends keyof User>(
-    user: User,
-    ...keys: Key[]
-  ): Omit<User, Key> {
-    for (const key of keys) {
-      delete user[key];
-    }
-    return user;
   }
 
   public async blockUser({ id }: { id: string }) {

@@ -3,9 +3,12 @@ import { TweetValidator } from "@/components/tweet/validator/tweet.validator";
 import { TweetService } from "@/components/tweet/service/tweet.service";
 import prisma from "@/prisma";
 import { UserService } from "@/components/user/services/user.service";
+import { retweetRouter } from "@/components/retweet/controller/retweet.router";
+import { RetweetService } from "@/components/retweet/service/retweet.service";
 
 const router = express.Router();
 const tweetService = new TweetService(prisma);
+const retweetService = new RetweetService(prisma);
 router.post("/", async (req, res) => {
   try {
     const { id } = res.locals.user;
@@ -38,10 +41,11 @@ router.delete("/", async (req, res) => {
 router.get("/", async (_, res) => {
   try {
     const { id } = res.locals.user;
+    const retweetedTweets = await retweetService.getRetweets(id);
     const tweets = await tweetService.getMyTweets({
       id: id,
     });
-    res.status(200).json({ response: tweets }).send();
+    res.status(200).json({ response: { tweets, retweetedTweets } }).send();
   } catch ({ message }) {
     res.status(404).json({ error: message }).send();
   }

@@ -1,5 +1,8 @@
 import { CreateTweetInput } from "@/components/tweet/validator/types";
 import { PrismaClient } from "@prisma/client";
+import { Tweet } from "@/components/tweet/model";
+import { exclude } from "@/components/utils/methods";
+import { User } from "@/components/user/models";
 
 export class TweetService {
   constructor(private readonly prisma: PrismaClient) {}
@@ -17,7 +20,7 @@ export class TweetService {
           content: validatedTweetBody.content,
         },
       });
-      return tweet;
+      return exclude(tweet, "deletedAt");
     } catch (e) {
       throw new Error("Invalid creation");
     }
@@ -51,7 +54,19 @@ export class TweetService {
         deletedAt: null,
       },
     });
-    console.log(tweets);
-    return tweets;
+    const tweetsExcluded: Tweet[] = [];
+    tweets.forEach((tweet) => {
+      tweetsExcluded.push(exclude(tweet, "deletedAt"));
+    });
+
+    return tweetsExcluded;
+  }
+
+  public async findById(tweetId: string) {
+    return await this.prisma.tweet.findUnique({
+      where: {
+        id: tweetId,
+      },
+    });
   }
 }
