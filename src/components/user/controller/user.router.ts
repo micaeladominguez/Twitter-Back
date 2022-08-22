@@ -1,12 +1,14 @@
 import express from "express";
 import { UserService } from "@/components/user/services/user.service";
 import { UserValidator } from "@/components/user/validator/user.validator";
+import prisma from "@/prisma";
 const router = express.Router();
+const userService = new UserService(prisma);
 router.put("/", async (req, res) => {
   try {
     const { id } = res.locals.user;
     const validateBody = UserValidator.validateUpdateUserBody(req.body);
-    const user = await UserService.updateUser({
+    const user = await userService.updateUser({
       id: id,
       updateUserInput: validateBody,
     });
@@ -18,7 +20,7 @@ router.put("/", async (req, res) => {
 router.get("/me", async (_, res) => {
   try {
     const { id } = res.locals.user;
-    const user = await UserService.findUserById({
+    const user = await userService.findUserById({
       id: id,
     });
     res
@@ -39,9 +41,9 @@ router.get("/", async (req, res) => {
     const email = req.query.email;
     let users;
     if (email) {
-      users = await UserService.allUsersLike({ email: String(email) });
+      users = await userService.allUsersLike({ email: String(email) });
     } else {
-      users = await UserService.allUsers();
+      users = await userService.allUsers();
     }
     res
       .status(200)
@@ -52,13 +54,13 @@ router.get("/", async (req, res) => {
   } catch ({ message }) {
     res.status(404).json({ error: message }).send();
   }
-});
+});UserService
 router.put("/block", async (req, res) => {
   try {
     const id = req.query.id;
     let user;
     if (id) {
-      user = UserService.blockUser({ id: String(id) });
+      user = userService.blockUser({ id: String(id) });
     }
     if (user) {
       res

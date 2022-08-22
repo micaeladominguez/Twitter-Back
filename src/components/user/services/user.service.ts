@@ -7,13 +7,8 @@ import {
 import argon2 from "argon2";
 
 export class UserService {
-  private static prisma: PrismaClient = new PrismaClient();
-
-  public static async createUser({
-    createUserInput,
-  }: {
-    createUserInput: CreateUserInput;
-  }) {
+  constructor(private readonly prisma: PrismaClient) {}
+  public async createUser(createUserInput: CreateUserInput) {
     const hashedPassword = await argon2.hash(createUserInput.password);
     try {
       const user = await this.prisma.user.create({
@@ -30,7 +25,7 @@ export class UserService {
       throw Error("The email is already taken");
     }
   }
-  public static async updateUser({
+  public async updateUser({
     id,
     updateUserInput,
   }: {
@@ -49,7 +44,7 @@ export class UserService {
     return userWithoutPassword;
   }
 
-  static async allUsers() {
+  public async allUsers() {
     const users: User[] = await this.prisma.user.findMany();
     const usersWithoutPassword: User[] = [];
     users.forEach((user) => {
@@ -57,7 +52,8 @@ export class UserService {
     });
     return usersWithoutPassword;
   }
-  static async findUserByEmail({ email }: { email: string }) {
+
+  public async findUserByEmail({ email }: { email: string }) {
     const findUser = await this.prisma.user.findUnique({
       where: {
         email: email,
@@ -66,7 +62,8 @@ export class UserService {
     if (!findUser) throw new Error("user not found");
     return findUser;
   }
-  static async findUserById({ id }: { id: string }): Promise<User> {
+
+  public async findUserById({ id }: { id: string }): Promise<User> {
     const findUser = await this.prisma.user.findUnique({
       where: {
         id: id,
@@ -77,7 +74,7 @@ export class UserService {
     return userWithoutPassword;
   }
 
-  static async allUsersLike({ email }: { email: string }) {
+  public async allUsersLike({ email }: { email: string }) {
     const findUsers = await this.prisma.user.findMany({
       where: {
         email: {
@@ -88,7 +85,7 @@ export class UserService {
     return findUsers;
   }
 
-  static exclude<User, Key extends keyof User>(
+  private exclude<User, Key extends keyof User>(
     user: User,
     ...keys: Key[]
   ): Omit<User, Key> {
@@ -98,7 +95,7 @@ export class UserService {
     return user;
   }
 
-  static async blockUser({ id }: { id: string }) {
+  public async blockUser({ id }: { id: string }) {
     const user: User = await this.prisma.user.update({
       where: {
         id: id,

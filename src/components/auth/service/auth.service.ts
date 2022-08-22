@@ -4,6 +4,8 @@ import {
   encodeUserSessionAccessJWT,
 } from "@/components/auth/service/user-session-jwt";
 import { UserService } from "@/components/user/services/user.service";
+import prisma from "@/prisma";
+const userService = new UserService(prisma);
 export class AuthService {
   public static decodeSessionToken(token: string) {
     const { sub } = decodeUserSessionAccessJWT(token);
@@ -20,7 +22,7 @@ export class AuthService {
     email: string;
     password: string;
   }) {
-    const user = await UserService.findUserByEmail({ email: email });
+    const user = await userService.findUserByEmail({ email: email });
     const match = await argon2.verify(user.password, password);
     if (match) {
       const jwt = this.encodeUserSessionAccess(user.id);
@@ -46,6 +48,6 @@ export class AuthService {
     if (!sub) {
       throw new Error("Invalid token");
     }
-    return await UserService.findUserById({ id: sub });
+    return await userService.findUserById({ id: sub });
   }
 }

@@ -1,14 +1,16 @@
 import express from "express";
 import { TweetValidator } from "@/components/tweet/validator/tweet.validator";
 import { TweetService } from "@/components/tweet/service/tweet.service";
+import prisma from "@/prisma";
+import { UserService } from "@/components/user/services/user.service";
 
 const router = express.Router();
-
+const tweetService = new TweetService(prisma);
 router.post("/", async (req, res) => {
   try {
     const { id } = res.locals.user;
     const validatedContent = TweetValidator.validateTweetBody(req.body);
-    const tweet = await TweetService.createTweet({
+    const tweet = await tweetService.createTweet({
       id: id,
       validatedTweetBody: validatedContent,
     });
@@ -19,12 +21,10 @@ router.post("/", async (req, res) => {
 });
 router.delete("/", async (req, res) => {
   try {
-    const { id } = res.locals.user;
     const tweetId = req.query.id;
     if (tweetId) {
-      await TweetService.deleteTweet({
+      await tweetService.deleteTweet({
         id: String(tweetId),
-        userId: id,
       });
     }
     res
@@ -38,7 +38,7 @@ router.delete("/", async (req, res) => {
 router.get("/", async (_, res) => {
   try {
     const { id } = res.locals.user;
-    const tweets = await TweetService.getMyTweets({
+    const tweets = await tweetService.getMyTweets({
       id: id,
     });
     res.status(200).json({ response: tweets }).send();
