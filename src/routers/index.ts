@@ -6,6 +6,7 @@ import { authRouter } from "@/components/auth/controller/auth.router";
 import { logger } from "@/logger";
 import { AuthService } from "@/components/auth/service/auth.service";
 import { tweetRouter } from "@/components/tweet/controller/tweet.router";
+import { followRouter } from "@/components/follow/controller/follow.router";
 
 const router = express.Router();
 
@@ -35,5 +36,6 @@ router.use(async (req, res, next) => {
 
 router.use("/users", userRouter);
 router.use("/tweet", tweetRouter);
+router.use("/follow", followRouter);
 
 export { router };

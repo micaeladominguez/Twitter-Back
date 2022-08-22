@@ -54,7 +54,7 @@ router.get("/", async (req, res) => {
   } catch ({ message }) {
     res.status(404).json({ error: message }).send();
   }
-});UserService
+});
 router.put("/block", async (req, res) => {
   try {
     const id = req.query.id;
