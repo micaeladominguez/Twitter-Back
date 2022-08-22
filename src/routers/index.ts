@@ -7,7 +7,8 @@ import { logger } from "@/logger";
 import { AuthService } from "@/components/auth/service/auth.service";
 import { tweetRouter } from "@/components/tweet/controller/tweet.router";
 import { followRouter } from "@/components/follow/controller/follow.router";
-import {retweetRouter} from "@/components/retweet/controller/retweet.router";
+import { retweetRouter } from "@/components/retweet/controller/retweet.router";
+import { likeRouter } from "@/components/like/controller/like.router";
 
 const router = express.Router();
 
@@ -39,4 +40,6 @@ router.use("/users", userRouter);
 router.use("/tweet", tweetRouter);
 router.use("/follow", followRouter);
 router.use("/retweet", retweetRouter);
+router.use("/like", likeRouter);
+
 export { router };
